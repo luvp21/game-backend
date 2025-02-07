@@ -57,7 +57,9 @@ io.on('connection', (socket) => {
     player.ready = !player.ready;
     console.log(`Player ${player.username} ready: ${player.ready}`);
 
-    if (room.players.length === 3 && room.players.every(p => p.ready)) {
+    // change it to 3
+
+    if (room.players.length === 2 && room.players.every(p => p.ready)) {
       console.log(`Starting game in room ${roomId}`);
       room.gameActive = true;
       room.players.forEach(p => {
@@ -76,7 +78,7 @@ io.on('connection', (socket) => {
     const player = room.players.find(p => p.id === socket.id);
     player.level = level;
 
-    if (room.players.every(p => p.level >= 5)) {
+    if (room.players.every(p => p.level >= 2)) {
       io.to(roomId).emit('gameWin');
     }
   });
