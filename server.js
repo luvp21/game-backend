@@ -11,11 +11,13 @@ const server = app.listen(PORT, () => {
 });
 
 const io = socketio(server, {
-    cors: {
-        origin: "https://game-frontend-eta.vercel.app/", // Change this to your frontend domain in production
-        methods: ["GET", "POST"]
-    }
+  cors: {
+      origin: "https://game-frontend-eta.vercel.app",
+      methods: ["GET", "POST"]
+  },
+  transports: ['websocket', 'polling']
 });
+
 const rooms = {};
 
 io.on('connection', (socket) => {
