@@ -3,8 +3,6 @@ const socketio = require('socket.io');
 const app = express();
 const cors = require('cors');
 
-const MAX_LEVEL = 10;  
-
 app.use(cors());
 
 const PORT = process.env.PORT || 3001;
