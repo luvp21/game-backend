@@ -30,7 +30,8 @@ io.on('connection', (socket) => {
       rooms[roomId] = {
         players: [],
         sequence: [],
-        gameActive: false
+        gameActive: false,
+        finishedPlayers: new Set() 
       };
     }
 
@@ -39,7 +40,6 @@ io.on('connection', (socket) => {
       username,
       ready: false,
       level: 1,
-      score: 0
     };
     
     rooms[roomId].players.push(player);
@@ -84,17 +84,23 @@ io.on('connection', (socket) => {
 
     player.level = level;
 
-    if (player.level === MAX_LEVEL) {
-        const minLevel = Math.min(...room.players.map(p => p.level));
-        
-        if (minLevel < MAX_LEVEL) {
-            socket.emit('waitingForOthers');
-            return;
-        }
-    }
+    io.to(roomId).emit("roomUpdate", room.players);
+  });
 
-    if (room.players.every(p => p.level >= MAX_LEVEL)) {
-        io.to(roomId).emit('gameWin');  
+  socket.on("playerFinished", (roomId) => {
+    const room = rooms[roomId];
+    if (!room) return;
+
+    room.finishedPlayers.add(socket.id);
+
+    const totalPlayers = room.players.length;
+    const finishedCount = room.finishedPlayers.size;
+
+    if (finishedCount === totalPlayers) {
+      io.to(roomId).emit("gameWin");
+      delete rooms[roomId]; // Reset the room after the game
+    } else {
+      io.to(socket.id).emit("waitingForOthers"); // Only notify the finished player
     }
   });
 
