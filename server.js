@@ -78,7 +78,7 @@ io.on('connection', (socket) => {
     const player = room.players.find(p => p.id === socket.id);
     player.level = level;
 
-    if (room.players.every(p => p.level >= 2)) {
+    if (room.players.every(p => p.level > 3)) {
       io.to(roomId).emit('gameWin');
     }
   });
