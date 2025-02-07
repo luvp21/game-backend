@@ -3,6 +3,8 @@ const socketio = require('socket.io');
 const app = express();
 const cors = require('cors');
 
+const MAX_LEVEL = 10;  
+
 app.use(cors());
 
 const PORT = process.env.PORT || 3001;
@@ -75,11 +77,24 @@ io.on('connection', (socket) => {
 
   socket.on('levelUp', (roomId, level) => {
     const room = rooms[roomId];
+    if (!room) return;
+    
     const player = room.players.find(p => p.id === socket.id);
+    if (!player) return;
+
     player.level = level;
 
-    if (room.players.every(p => p.level > 3)) {
-      io.to(roomId).emit('gameWin');
+    if (player.level === MAX_LEVEL) {
+        const minLevel = Math.min(...room.players.map(p => p.level));
+        
+        if (minLevel < MAX_LEVEL) {
+            socket.emit('waitingForOthers');
+            return;
+        }
+    }
+
+    if (room.players.every(p => p.level >= MAX_LEVEL)) {
+        io.to(roomId).emit('gameWin');  
     }
   });
 
