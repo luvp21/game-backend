@@ -1,16 +1,21 @@
 const express = require('express');
 const socketio = require('socket.io');
 const app = express();
+const cors = require('cors');
 
-const PORT = 3001;
-const server = app.listen(PORT);
-const io = socketio(server, {
-  cors: {
-    origin: "http://localhost:3000",
-    methods: ["GET", "POST"]
-  }
+app.use(cors());
+
+const PORT = process.env.PORT || 3001;
+const server = app.listen(PORT, () => {
+    console.log(`Server running on port ${PORT}`);
 });
 
+const io = socketio(server, {
+    cors: {
+        origin: "https://game-frontend-eta.vercel.app/", // Change this to your frontend domain in production
+        methods: ["GET", "POST"]
+    }
+});
 const rooms = {};
 
 io.on('connection', (socket) => {
