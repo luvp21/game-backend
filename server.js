@@ -96,7 +96,7 @@ io.on('connection', (socket) => {
 
     if (finishedCount === totalPlayers) {
       io.to(roomId).emit("gameWin");
-      delete rooms[roomId]; // Reset the room after the game
+      delete rooms[roomId];
     } else {
       io.to(socket.id).emit("waitingForOthers"); // Only notify the finished player
     }
