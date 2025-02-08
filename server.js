@@ -59,7 +59,7 @@ io.on('connection', (socket) => {
 
     // change it to 3
 
-    if (room.players.length === 2 && room.players.every(p => p.ready)) {
+    if (room.players.length === 3 && room.players.every(p => p.ready)) {
       console.log(`Starting game in room ${roomId}`);
       room.gameActive = true;
       room.players.forEach(p => {
